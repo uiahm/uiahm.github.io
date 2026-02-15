@@ -1,0 +1,280 @@
+<div class="abb">
+  <main class="abb-hero">
+    <div class="abb-wrap">
+      <h1 class="abb-logo">AdBreakBox</h1>
+      <p class="abb-tagline">Own your screen.</p>
+      <p class="abb-sub">
+        A broadcast overlay system built for hospitality venues.
+      </p>
+
+      <div class="abb-cta">
+        <a class="abb-btn" href="#waitlist">Join the waitlist</a>
+        <p class="abb-micro">Early access updates. No spam.</p>
+      </div>
+    </div>
+  </main>
+
+  <section class="abb-section">
+    <div class="abb-wrap abb-narrow">
+      <h2>Your screens are valuable real estate.</h2>
+      <p>
+        During live broadcast breaks, most venues lose control of what’s shown.
+        AdBreakBox helps you take control of your screen time — automatically.
+      </p>
+    </div>
+  </section>
+
+  <section class="abb-section abb-video">
+    <div class="abb-wrap abb-narrow">
+      <h2>See AdBreakBox in action.</h2>
+      <p class="abb-muted">Video coming soon.</p>
+
+      <!-- Replace this placeholder later with a real embed (YouTube/Vimeo) -->
+      <div class="abb-video-box" aria-label="Video placeholder">
+        <div class="abb-play" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="waitlist" class="abb-section abb-waitlist">
+    <div class="abb-wrap abb-narrow">
+      <h2>Launching soon.</h2>
+      <p>
+        We’re piloting AdBreakBox in live hospitality environments. Join the waitlist
+        for early access and rollout updates.
+      </p>
+
+      <!-- Replace action="" with your form endpoint (Formspree, Google Form, etc.) -->
+      <form class="abb-form" action="" method="post" onsubmit="return false;">
+        <div class="abb-grid">
+          <label class="abb-field">
+            <span>Name</span>
+            <input type="text" name="name" placeholder="Your name" />
+          </label>
+
+          <label class="abb-field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="you@venue.com" required />
+          </label>
+
+          <label class="abb-field">
+            <span>Venue</span>
+            <input type="text" name="venue" placeholder="Venue name" />
+          </label>
+
+          <label class="abb-field">
+            <span>City</span>
+            <input type="text" name="city" placeholder="Tamworth" />
+          </label>
+        </div>
+
+        <label class="abb-field">
+          <span>How many screens?</span>
+          <input type="text" name="screens" placeholder="e.g., 6" />
+        </label>
+
+        <button class="abb-btn abb-btn-wide" type="submit">Join the waitlist</button>
+        <p class="abb-micro abb-muted">By joining, you agree to receive AdBreakBox updates.</p>
+      </form>
+
+      <footer class="abb-footer">
+        <div class="abb-footer-inner">
+          <div>
+            <div class="abb-footer-logo">AdBreakBox</div>
+            <div class="abb-muted">Own your screen.</div>
+          </div>
+          <div class="abb-muted">
+            Contact: <a class="abb-link" href="mailto:hello@adbreakbox.com">hello@adbreakbox.com</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+</div>
+
+<style>
+  :root{
+    --abb-bg:#111111;
+    --abb-card:#151515;
+    --abb-text:#ffffff;
+    --abb-muted:rgba(255,255,255,.72);
+    --abb-muted2:rgba(255,255,255,.55);
+    --abb-blue:#1E6BFF;
+    --abb-border:rgba(255,255,255,.10);
+  }
+
+  .abb{
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    color:var(--abb-text);
+    background:var(--abb-bg);
+    line-height:1.35;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  .abb-wrap{
+    width:min(1100px, 92vw);
+    margin:0 auto;
+  }
+  .abb-narrow{ width:min(760px, 92vw); }
+
+  .abb-hero{
+    min-height:92vh;
+    display:flex;
+    align-items:center;
+    padding:72px 0 48px;
+    border-bottom:1px solid var(--abb-border);
+  }
+
+  .abb-logo{
+    font-size:clamp(44px, 7vw, 72px);
+    letter-spacing:-0.02em;
+    margin:0 0 10px;
+    font-weight:800;
+  }
+
+  .abb-tagline{
+    margin:0 0 14px;
+    font-size:clamp(20px, 2.6vw, 28px);
+    font-weight:600;
+  }
+
+  .abb-sub{
+    margin:0 0 26px;
+    color:var(--abb-muted);
+    font-size:18px;
+    max-width:48ch;
+  }
+
+  .abb-cta{ display:flex; flex-direction:column; gap:10px; }
+
+  .abb-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--abb-blue);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    padding:14px 18px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.12);
+    transition:transform .06s ease, filter .15s ease;
+    width:fit-content;
+  }
+  .abb-btn:hover{ filter:brightness(1.05); }
+  .abb-btn:active{ transform:translateY(1px); }
+  .abb-btn-wide{ width:100%; margin-top:10px; }
+
+  .abb-micro{
+    margin:0;
+    font-size:13px;
+    color:var(--abb-muted2);
+  }
+  .abb-muted{ color:var(--abb-muted); }
+
+  .abb-section{
+    padding:64px 0;
+    border-bottom:1px solid var(--abb-border);
+  }
+
+  .abb-section h2{
+    margin:0 0 12px;
+    font-size:26px;
+    letter-spacing:-0.01em;
+  }
+
+  .abb-section p{
+    margin:0;
+    color:var(--abb-muted);
+    font-size:16px;
+  }
+
+  .abb-video-box{
+    margin-top:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border:1px solid var(--abb-border);
+    border-radius:16px;
+    height:340px;
+    position:relative;
+    overflow:hidden;
+  }
+  .abb-play{
+    width:74px;
+    height:74px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.18);
+    position:absolute;
+    inset:0;
+    margin:auto;
+    background:rgba(17,17,17,.35);
+    backdrop-filter: blur(6px);
+  }
+  .abb-play:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    margin:auto;
+    width:0;height:0;
+    border-left:18px solid #fff;
+    border-top:11px solid transparent;
+    border-bottom:11px solid transparent;
+    transform:translateX(3px);
+  }
+
+  .abb-form{
+    margin-top:18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--abb-border);
+    border-radius:16px;
+    padding:18px;
+  }
+
+  .abb-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:720px){
+    .abb-grid{ grid-template-columns:1fr; }
+    .abb-hero{ min-height:88vh; }
+  }
+
+  .abb-field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .abb-field span{
+    font-size:13px;
+    color:var(--abb-muted2);
+  }
+  .abb-field input{
+    background:rgba(0,0,0,.25);
+    border:1px solid rgba(255,255,255,.14);
+    color:#fff;
+    border-radius:10px;
+    padding:12px 12px;
+    outline:none;
+  }
+  .abb-field input:focus{
+    border-color:rgba(30,107,255,.55);
+    box-shadow:0 0 0 3px rgba(30,107,255,.18);
+  }
+
+  .abb-footer{
+    margin-top:26px;
+    padding-top:18px;
+    border-top:1px solid var(--abb-border);
+  }
+  .abb-footer-inner{
+    display:flex;
+    gap:14px;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .abb-footer-logo{ font-weight:800; letter-spacing:-0.01em; }
+  .abb-link{ color:#fff; text-decoration:underline; text-decoration-color:rgba(255,255,255,.35); }
+</style>
