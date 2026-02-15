@@ -45,41 +45,46 @@
       </p>
 
       <!-- Replace action="" with your form endpoint (Formspree, Google Form, etc.) -->
-     <form class="abb-form" action="https://formspree.io/f/xnjbdboj" method="POST">
-        <div class="abb-grid">
-          <label class="abb-field">
-            <span>Name</span>
-            <input type="text" name="name" placeholder="Your name" />
-          </label>
+    <form class="abb-form" action="https://formspree.io/f/xnjbdboj" method="POST">
+  <div class="abb-grid">
+    <label class="abb-field">
+      <span>Name</span>
+      <input type="text" name="name" placeholder="Your name" />
+    </label>
 
-          <input type="hidden" name="_subject" value="New AdBreakBox waitlist signup" />
+    <label class="abb-field">
+      <span>Email</span>
+      <input type="email" name="email" placeholder="you@venue.com" required />
+    </label>
 
+    <label class="abb-field">
+      <span>Venue</span>
+      <input type="text" name="venue" placeholder="Venue name" />
+    </label>
 
-          <label class="abb-field">
-            <span>Email</span>
-            <input type="email" name="email" placeholder="you@venue.com" required />
-          </label>
+    <label class="abb-field">
+      <span>City</span>
+      <input type="text" name="city" placeholder="City" />
+    </label>
+  </div>
 
-          <label class="abb-field">
-            <span>Venue</span>
-            <input type="text" name="venue" placeholder="Venue name" />
-          </label>
+  <label class="abb-field">
+    <span>How many screens?</span>
+    <input type="text" name="screens" placeholder="e.g., 6" />
+  </label>
 
-          <label class="abb-field">
-            <span>City</span>
-            <input type="text" name="city" placeholder="Tamworth" />
-          </label>
-        </div>
+  <input type="hidden" name="_subject" value="New AdBreakBox waitlist signup" />
+  <input type="hidden" name="_redirect" value="https://adbreakbox.com/?thanks=1" />
 
-        <label class="abb-field">
-          <span>How many screens?</span>
-          <input type="text" name="screens" placeholder="e.g., 6" />
-        </label>
-
-        <button class="abb-btn abb-btn-wide" type="submit">Join the waitlist</button>
-        <p class="abb-micro abb-muted">By joining, you agree to receive AdBreakBox updates.</p>
-      </form>
-
+  <button class="abb-btn abb-btn-wide" type="submit">
+    Join the waitlist
+  </button>
+</form>
+      
+<div id="thanksMessage" style="display:none; margin-top:16px; padding:14px; border-radius:10px; background:rgba(30,107,255,.15); border:1px solid rgba(30,107,255,.4);">
+  Thanks — you're on the AdBreakBox early access list.
+</div>
+      
       <footer class="abb-footer">
         <div class="abb-footer-inner">
           <div>
