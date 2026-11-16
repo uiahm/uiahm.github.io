@@ -254,7 +254,7 @@ button,input,select{font:inherit;color:inherit}
           <option value="3">Three times</option>
         </select>
       </label>
-      <label class="opt inline full"><span class="switch"><input type="checkbox" id="tkAlways"><span></span></span>Keep a ticker running along the bottom all the time</label>
+      <label class="opt inline full"><span class="switch"><input type="checkbox" id="tkAlways"><span></span></span>Keep the ticker text running all the time (when off, it scrolls past on the message timer with your messages)</label>
       <label class="opt full">Ticker text (one item per line; they scroll past with a ⬥ between them)
         <textarea id="tkCustom" rows="4" placeholder="Happy hour 4pm to 6pm&#10;Bistro open for lunch and dinner&#10;232 Oxford Street, Bondi Junction"></textarea>
       </label>
@@ -593,7 +593,7 @@ function adDue(){
   return Date.now()-lastAdAt>=S.adEvery*60000;
 }
 let lastMsgAt=0,msgIdx=0,msgTimer=null,bannerTimer=null,bannerUp=false,queueMsgNow=false;
-function liveMsgs(){return pool("msgs").filter(adLive)}
+function liveMsgs(){const m=pool("msgs").filter(adLive);if(!S.tkAlways&&standingLines().length)m.push({id:"ticker-text",cat:"msgs",type:"text/message",name:standingLines().join("  ⬥  "),sub:"",days:[]});return m}
 function msgDue(){return queueMsgNow||Date.now()-lastMsgAt>=Math.max(1,S.msgEvery)*60000}
 function pickMsg(){const m=liveMsgs();if(!m.length)return null;const x=m[msgIdx%m.length];msgIdx++;lastMsgAt=Date.now();queueMsgNow=false;return x}
 function showBanner(m){
@@ -613,7 +613,7 @@ function showTicker(m,onDone){
   const tk=$("ticker"),tt=$("tkText");
   tk.className="show "+(S.tkSize||"m");
   const lab=msgLabel(m);
-  tt.innerHTML=(lab?`<span class="tv">${esc(lab)}</span>`:"")+esc(m.name)+(m.sub?`<span class="dot">⬥</span><span class="ts">${esc(m.sub)}</span>`:"");
+  tt.innerHTML=m.id==="ticker-text"?standingLines().map(esc).join('<span class="dot">⬥</span>'):((lab?`<span class="tv">${esc(lab)}</span>`:"")+esc(m.name)+(m.sub?`<span class="dot">⬥</span><span class="ts">${esc(m.sub)}</span>`:""));
   $("lower").classList.remove("show");clearTimeout(titleTimer);
   bannerUp=true;tkDone=onDone||null;
   const W=tk.clientWidth,w=tt.scrollWidth,ltr=(S.tkDir||"ltr")==="ltr";
