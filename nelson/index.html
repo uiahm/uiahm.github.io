@@ -139,6 +139,8 @@ button,input,select{font:inherit;color:inherit}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 20px}
 .opt{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
 .opt select,.opt input[type=number],.opt input[type=text]{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;color:var(--ink)}
+.opt.full{grid-column:1/-1}
+.opt textarea{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;color:var(--ink);font-family:inherit;resize:vertical}
 .opt.inline{flex-direction:row;align-items:center;gap:10px;color:var(--ink);font-size:15px}
 .foot{margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .foot button{background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--muted)}
@@ -251,6 +253,10 @@ button,input,select{font:inherit;color:inherit}
           <option value="2">Twice</option>
           <option value="3">Three times</option>
         </select>
+      </label>
+      <label class="opt inline full"><span class="switch"><input type="checkbox" id="tkAlways"><span></span></span>Keep a ticker running along the bottom all the time</label>
+      <label class="opt full">Ticker text (one item per line; they scroll past with a ⬥ between them)
+        <textarea id="tkCustom" rows="4" placeholder="Happy hour 4pm to 6pm&#10;Bistro open for lunch and dinner&#10;232 Oxford Street, Bondi Junction"></textarea>
       </label>
       <label class="opt tk"><span>Try it</span><button type="button" id="tkTest" class="tktest">Preview the ticker</button></label>
       <label class="opt bn">Message stays up for (seconds)
@@ -393,7 +399,7 @@ function setItems(found){
 }
 
 /* ---------- Settings (kept in this browser) ---------- */
-const DEF={tkDir:"ltr",tkSize:"m",tkSpeed:"10",tkPasses:"1",msgEvery:5,msgStyle:"ticker",msgDur:12,atmos:"2",mix:"alternate",adMode:"clips",adEvery:3,imgDur:10,venue:"The Nelson Hotel",fit:"contain",showTitle:true,muted:false};
+const DEF={tkDir:"ltr",tkSize:"m",tkSpeed:"10",tkPasses:"1",msgEvery:5,msgStyle:"ticker",msgDur:12,atmos:"2",mix:"alternate",adMode:"clips",adEvery:3,imgDur:10,venue:"The Nelson Hotel",fit:"contain",showTitle:true,muted:false,tkAlways:false,tkCustom:""};
 let S={...DEF};
 try{const raw=localStorage.getItem("nelson-ph-settings");if(raw)S={...DEF,...JSON.parse(raw)}}catch(e){}
 let saveT=null;
@@ -401,13 +407,13 @@ function saveS(){
   try{localStorage.setItem("nelson-ph-settings",JSON.stringify(S))}catch(e){}
 }
 function paintSettings(){
-  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit"].forEach(k=>{const el=$(k);if(document.activeElement!==el)el.value=S[k]});
-  ["showTitle","muted"].forEach(k=>$(k).checked=S[k]);
+  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit","tkCustom"].forEach(k=>{const el=$(k);if(document.activeElement!==el)el.value=S[k]});
+  ["showTitle","muted","tkAlways"].forEach(k=>$(k).checked=S[k]);
   syncLabels();
 }
 function bindSettings(){
-  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit"].forEach(k=>{const el=$(k);el.addEventListener("input",()=>{S[k]=el.type==="number"?Math.max(+el.min||0,+el.value||0):el.value;saveS();syncLabels()})});
-  ["showTitle","muted"].forEach(k=>{const el=$(k);el.addEventListener("change",()=>{S[k]=el.checked;saveS()})});
+  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit","tkCustom"].forEach(k=>{const el=$(k);el.addEventListener("input",()=>{S[k]=el.type==="number"?Math.max(+el.min||0,+el.value||0):el.value;saveS();syncLabels()})});
+  ["showTitle","muted","tkAlways"].forEach(k=>{const el=$(k);el.addEventListener("change",()=>{S[k]=el.checked;saveS()})});
   paintSettings();
 }
 function syncLabels(){
@@ -596,6 +602,7 @@ function showBanner(m){
   const vn=(S.venue||"The Nelson Hotel").toLowerCase().replace(/ hotel$/,"");
   $("bVenue").style.display=($("bVenue").textContent!=="Tonight"&&m.name.toLowerCase().includes(vn))?"none":"";
   $("lower").classList.remove("show");clearTimeout(titleTimer);
+  if(tkAnim){tkAnim.cancel();tkAnim=null;$("ticker").classList.remove("show")}
   const bn=$("banner");bn.classList.add("reset");bn.classList.remove("out","show");void bn.offsetWidth;bn.classList.remove("reset");
   bn.classList.add("show");bannerUp=true;
   clearTimeout(bannerTimer);bannerTimer=setTimeout(hideBanner,Math.max(4,S.msgDur)*1000);
@@ -619,6 +626,20 @@ function showTicker(m,onDone){
   tkAnim=tt.animate([{transform:`translate(${from}px,-50%)`},{transform:`translate(${to}px,-50%)`}],{duration:dur,iterations:passes,easing:"linear",delay:400});
   tkAnim.onfinish=()=>{hideTicker()};
 }
+function standingLines(){return String(S.tkCustom||"").split("\n").map(s=>s.trim()).filter(Boolean)}
+function runStanding(){
+  const lines=standingLines();if(!lines.length)return;
+  const tk=$("ticker"),tt=$("tkText");
+  tk.className="show "+(S.tkSize||"m");
+  tt.innerHTML=lines.map(esc).join('<span class="dot">⬥</span>')+'<span class="dot">⬥</span>';
+  const W=tk.clientWidth,w=tt.scrollWidth,ltr=(S.tkDir||"ltr")==="ltr";
+  const from=ltr?-w:W,to=ltr?W:-w;
+  const pxps=(+S.tkSpeed||10)/100*window.innerWidth;
+  if(tkAnim)tkAnim.cancel();
+  tt.style.transform=`translate(${from}px,-50%)`;
+  tkAnim=tt.animate([{transform:`translate(${from}px,-50%)`},{transform:`translate(${to}px,-50%)`}],{duration:(W+w)/pxps*1000,iterations:1,easing:"linear"});
+  tkAnim.onfinish=()=>{tkAnim=null;if(playing&&!paused&&S.tkAlways&&!bannerUp&&!(curItem&&curItem.cat==="ads"))runStanding();else tk.classList.remove("show")};
+}
 function hideTicker(){const tk=$("ticker");tk.classList.remove("show");if(tkAnim){tkAnim.cancel();tkAnim=null}
   bannerUp=false;const d=tkDone;tkDone=null;if(d)setTimeout(d,500)}
 function showMsgOverlay(m,onDone){if(S.msgStyle==="ticker")showTicker(m,onDone);else{showBanner(m);if(onDone)setTimeout(onDone,Math.max(4,S.msgDur)*1000+900)}}
@@ -627,9 +648,10 @@ function hideBanner(){if(tkAnim||$("ticker").classList.contains("show")){const d
     setTimeout(()=>{if(!bn.classList.contains("show")){bn.classList.add("reset");bn.classList.remove("out");void bn.offsetWidth;bn.classList.remove("reset")}},950)}
   bannerUp=false}
 function msgTick(){
-  if(!playing||paused||S.msgStyle==="full"||bannerUp||single)return;
+  if(!playing||paused||single)return;
   if(curItem&&curItem.cat==="ads")return;
-  if(msgDue()){const m=pickMsg();if(m)showMsgOverlay(m)}
+  if(S.msgStyle!=="full"&&!bannerUp&&msgDue()){const m=pickMsg();if(m){showMsgOverlay(m);return}}
+  if(S.tkAlways&&!bannerUp&&!tkAnim)runStanding();
 }
 function next(){
   if(S.msgStyle==="full"&&msgDue()){const m=pickMsg();if(m)return m}
@@ -742,7 +764,7 @@ function advanceOnce(v){if(v._done)return;v._done=true;advance()}
 function cleanup(u){}
 function showTitle(it){
   clearTimeout(titleTimer);const l=$("lower");
-  if(!S.showTitle||bannerUp){l.classList.remove("show");return}
+  if(!S.showTitle||bannerUp||(S.tkAlways&&standingLines().length)){l.classList.remove("show");return}
   $("lVenue").textContent=S.venue||"";$("lTitle").textContent=it.name;
   l.classList.add("show");titleTimer=setTimeout(()=>l.classList.remove("show"),6000);
 }
