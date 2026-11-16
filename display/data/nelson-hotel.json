@@ -1,0 +1,17 @@
+{
+  "venue": "The Nelson Hotel",
+  "logo": "https://s39888.pcdn.co/wp-content/uploads/2021/12/tnh-logo-white.svg",
+  "accent": "#84754E",
+  "rotateSeconds": 9,
+  "position": "bottom",
+  "showClock": true,
+  "messages": [
+    { "kicker": "Welcome to The Nelson", "text": "A local with heart" },
+    { "kicker": "Bistro", "text": "The best steaks in NSW, according to AHA NSW" },
+    { "kicker": "Level One", "text": "Kookaburras Comedy ~ ask the bar for dates" },
+    { "kicker": "Bistro lunch", "text": "Tuesday to Sunday ~ 12pm to 3pm" },
+    { "kicker": "Functions", "text": "Public Bar ~ Saloon Bar ~ Level One ~ Beer Garden" },
+    { "kicker": "Bottle shop", "text": "Open till midnight Monday to Saturday" }
+  ],
+  "ticker": "232 Oxford Street, Bondi Junction ~ 02 9389 6032 ~ thenelsonhotel.com.au ~ 5 large TVs ~ 2 pool tables ~ TAB ~ Craft beer"
+}
