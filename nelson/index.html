@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Nelson Hotel Picture House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Baskervville:ital,wght@0,400;0,600;0,700;1,400&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Hill House";src:url("fonts/HillHouse.woff") format("woff"),url("https://s39888.pcdn.co/wp-content/uploads/2021/12/Hill_House.woff") format("woff");font-display:swap}
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F6F4EF; --surface:#FFFFFF; --ink:#000000; --muted:#5E5A50;
+  --line:#DEDACE; --brass:#84754E; --brass-soft:#EEEADF; --velvet:#000000;
+  --on-brass:#FFFFFF;
+  --display:"Hill House", "Josefin Sans", "Futura", sans-serif;
+  --serif:"Baskervville", Baskerville, Georgia, serif;
+  --ui:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E0E0E; --surface:#1A1A1A; --ink:#FFFFFF; --muted:#ABA697;
+    --line:#34322C; --brass:#B3A274; --brass-soft:#2C291F; --velvet:#B3A274; --on-brass:#000000;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E0E0E; --surface:#1A1A1A; --ink:#FFFFFF; --muted:#ABA697;
+  --line:#34322C; --brass:#B3A274; --brass-soft:#2C291F; --velvet:#B3A274; --on-brass:#000000;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--ui);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+.wrap{max-width:1500px;margin:0 auto;padding:20px 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:8px 0 22px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.brand{font-family:var(--display);font-size:clamp(30px,5vw,46px);line-height:1;letter-spacing:.02em;margin:0;color:var(--ink)}
+.brand small{display:block;font-family:var(--ui);font-size:14px;color:var(--muted);letter-spacing:0;margin-top:8px}
+.play-btn{display:inline-flex;align-items:center;gap:10px;background:var(--velvet);color:var(--bg);border:0;border-radius:999px;padding:14px 26px;font-weight:700;font-size:16px;cursor:pointer}
+.play-btn:hover{filter:brightness(1.08)}
+.play-btn svg{width:18px;height:18px}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (min-width:1500px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.reel{background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:260px}
+.reel-head{padding:16px 16px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.reel-head h2{margin:0;font-size:18px;font-weight:700}
+.count{color:var(--muted);font-size:13px}
+.drop{margin:0 16px 12px;border:1.5px dashed var(--line);border-radius:10px;padding:14px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--brass);background:var(--brass-soft);color:var(--ink)}
+.drop input{display:none}
+.drop.busy{pointer-events:none;opacity:.6}
+.readonly .drop,.readonly .icon[data-a=del],.readonly .switch,.readonly #wipe{display:none}
+.readonly .name,.readonly .detail input,.readonly .settings select,.readonly .settings input{pointer-events:none}
+.limit{margin:-4px 16px 10px;font-size:12px;color:var(--muted)}
+.items{list-style:none;margin:0;padding:0 8px 8px;display:flex;flex-direction:column;gap:2px}
+.item{border-radius:8px;padding:8px}
+.item:hover{background:var(--bg)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.thumb{width:44px;height:30px;border-radius:4px;background:var(--bg);flex:none;object-fit:cover;display:grid;place-items:center;color:var(--muted);font-size:11px;border:1px solid var(--line)}
+.name{flex:1 1 120px;min-width:90px;border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 6px;font-weight:500;text-overflow:ellipsis}
+.name:hover{border-color:var(--line)}
+.name:focus{border-color:var(--brass);background:var(--surface)}
+.icon{border:0;background:transparent;width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--muted);cursor:pointer;flex:none}
+.icon:hover{background:var(--line);color:var(--ink)}
+.icon svg{width:16px;height:16px}
+.switch{position:relative;width:34px;height:20px;flex:none}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch span{position:absolute;inset:0;background:var(--line);border-radius:20px;cursor:pointer;transition:background .15s}
+.switch span::after{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .15s}
+.switch input:checked+span{background:var(--brass)}
+.switch input:checked+span::after{transform:translateX(14px)}
+.switch input:focus-visible+span{outline:2px solid var(--brass);outline-offset:2px}
+.item.off .name,.item.off .thumb{opacity:.45}
+.detail{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;padding:10px 4px 4px 54px;font-size:13px;color:var(--muted)}
+.item.open .detail{display:grid}
+.detail label{display:flex;flex-direction:column;gap:3px}
+.detail input{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 7px;width:100%}
+.detail .full{grid-column:1/-1}
+.days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.days button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer}
+.days button.on{background:var(--brass);border-color:var(--brass);color:var(--on-brass)}
+.tag{font-size:11px;font-weight:600;color:var(--brass);background:var(--brass-soft);border-radius:999px;padding:2px 8px;white-space:nowrap;flex:none}
+.thumb.txt{font-family:var(--display);font-size:15px;color:var(--brass)}
+.compose{margin:0 16px 10px;display:flex;flex-direction:column;gap:8px}
+.compose>button{border:1px solid var(--brass);background:transparent;color:var(--brass);border-radius:10px;padding:10px;font-weight:600;cursor:pointer}
+.compose>button:hover{background:var(--brass-soft)}
+.compose form{display:none;flex-direction:column;gap:8px;background:var(--bg);border-radius:10px;padding:12px}
+.compose.open form{display:flex}.compose.open>button{display:none}
+.compose input{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px}
+.compose .acts{display:flex;gap:8px;justify-content:flex-end}
+.compose .acts button{border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+.compose .acts .go{background:var(--velvet);color:var(--bg)}
+.compose .acts .cancel{background:transparent;color:var(--muted)}
+.readonly .compose{display:none}
+.tktest{border:1px solid var(--brass);background:transparent;color:var(--brass);border-radius:8px;padding:8px 10px;font-weight:600;cursor:pointer}
+.tktest:hover{background:var(--brass-soft)}
+#ticker{position:absolute;left:0;right:0;bottom:env(safe-area-inset-bottom,0px);height:2.1em;background:rgba(0,0,0,.9);border-top:2px solid #B3A274;border-bottom:2px solid #B3A274;overflow:hidden;opacity:0;transition:opacity .5s ease;z-index:3;font-size:3vw;pointer-events:none}
+#ticker.show{opacity:1}
+#ticker.s{font-size:2vw}#ticker.m{font-size:3vw}#ticker.l{font-size:4.2vw}#ticker.xl{font-size:5.6vw}
+#ticker .tt{position:absolute;top:50%;left:0;white-space:nowrap;color:#FFFFFF;font-weight:800;line-height:1;transform:translateY(-50%);will-change:transform}
+#ticker .tt .tv{font-family:var(--display);font-weight:400;color:#B3A274;margin-right:.6em}
+#ticker .tt .ts{font-weight:500;opacity:.85}
+#ticker .tt .dot{color:#B3A274;margin:0 .55em}
+#banner{position:absolute;left:0;right:0;bottom:0;padding:1.6vw 4vw calc(1.8vw + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(0,0,0,.92),rgba(0,0,0,.97));border-top:3px solid #B3A274;color:#FFFFFF;display:flex;align-items:center;gap:2.4vw;transform:translateX(-105%);transition:transform .9s cubic-bezier(.2,.8,.2,1);z-index:2}
+#banner.show{transform:none}
+#banner.out{transform:translateX(105%);transition:transform .9s cubic-bezier(.6,0,.8,.2)}
+#banner.reset{transition:none}
+#banner .bv{font-family:var(--display);color:#B3A274;font-size:1.9vw;white-space:nowrap;padding-right:2.4vw;border-right:1px solid rgba(132,117,78,.65)}
+#banner .bt{display:flex;flex-direction:column;min-width:0}
+#banner #bHead{font-weight:800;font-size:3vw;line-height:1.1}
+#banner #bSub{font-weight:500;font-size:1.7vw;opacity:.85;margin-top:.3vw}
+#banner #bSub:empty{display:none}
+#msg{position:absolute;inset:0;background:#000000;color:#FFFFFF;opacity:0;transition:opacity .45s ease;display:flex;flex-direction:column;justify-content:center;padding:0 9vw;overflow:hidden}
+#msg.show{opacity:1}
+#msg .mf{position:absolute;inset:2.5vw;border:3px solid #B3A274}
+#msg .mf::after{content:"";position:absolute;inset:.8vw;border:1px solid rgba(132,117,78,.65)}
+#msg .mb{position:absolute;right:-26vw;top:50%;width:70vw;height:70vw;transform:translateY(-50%);background:repeating-conic-gradient(from 0deg,rgba(132,117,78,.65) 0 1.2deg,transparent 1.2deg 9deg);-webkit-mask:radial-gradient(circle,transparent 0 13vw,#000 13.1vw 34vw,transparent 34.1vw);mask:radial-gradient(circle,transparent 0 13vw,#000 13.1vw 34vw,transparent 34.1vw);opacity:.55}
+#msg .mv{font-family:var(--display);color:#B3A274;font-size:4.2vw;line-height:1;position:relative}
+#msg .mh{font-weight:900;line-height:.98;letter-spacing:-.02em;margin-top:2vw;position:relative;max-width:66vw;overflow-wrap:break-word}
+#msg .ms{font-weight:700;font-size:3.6vw;margin-top:2vw;position:relative;max-width:66vw;color:#FFFFFF}
+#msg .mfoot{position:absolute;left:9vw;right:9vw;bottom:5vw;display:flex;justify-content:space-between;font-size:1.7vw;font-weight:500}
+#msg .mfoot b{font-family:var(--display);font-weight:400;color:#B3A274;font-size:2.2vw}
+.brand small{text-transform:none}
+.hdr-acts{display:flex;gap:10px;flex-wrap:wrap}
+.folder-btn{border:1px solid var(--velvet);background:transparent;color:var(--velvet);border-radius:999px;padding:13px 22px;font-weight:700;font-size:16px;cursor:pointer}
+.folder-btn:hover{background:var(--brass-soft)}
+.folder-note{margin:-8px 0 20px;padding:12px 16px;border-radius:10px;background:var(--brass-soft);font-size:14px;display:none}
+.folder-note.show{display:block}
+.empty{padding:6px 16px 18px;color:var(--muted);font-size:14px}
+
+.settings{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 16px}
+.settings h2{margin:0 0 14px;font-size:18px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 20px}
+.opt{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+.opt select,.opt input[type=number],.opt input[type=text]{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;color:var(--ink)}
+.opt.inline{flex-direction:row;align-items:center;gap:10px;color:var(--ink);font-size:15px}
+.foot{margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot button{background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--muted)}
+.foot button:hover{color:var(--velvet);border-color:var(--velvet)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;transition:all .25s;pointer-events:none;z-index:50;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Stage */
+#stage{position:fixed;inset:0;background:#000;z-index:100;display:none;cursor:none;overflow:hidden}
+#stage.on{display:block}
+#stage.pointer{cursor:default}
+#stage video,#stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .45s ease}
+#stage .show{opacity:1}
+#stage.fill video,#stage.fill img{object-fit:cover}
+.lower{position:absolute;left:clamp(20px,4vw,60px);bottom:calc(clamp(20px,5vh,60px) + env(safe-area-inset-bottom,0px));color:#FFFFFF;opacity:0;transform:translateY(10px);transition:all .6s ease;text-shadow:0 2px 12px rgba(0,0,0,.8);max-width:70vw}
+.lower.show{opacity:1;transform:none}
+.lower .venue{font-family:var(--display);font-size:clamp(14px,1.6vw,22px);color:#B3A274;letter-spacing:.04em}
+.lower .title{font-weight:700;font-size:clamp(20px,2.8vw,40px);line-height:1.15}
+.ctrl{position:absolute;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;display:flex;gap:8px;justify-content:flex-end;background:linear-gradient(rgba(0,0,0,.7),transparent);opacity:0;transition:opacity .2s}
+#stage.pointer .ctrl{opacity:1}
+.ctrl button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer}
+.ctrl button:hover{background:rgba(255,255,255,.26)}
+.ctrl .np{margin-right:auto;color:#ccc;font-size:14px;align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.idle{position:absolute;inset:0;display:none;place-items:center;text-align:center;color:#B3AA98;padding:20px}
+.idle.show{display:grid}
+.idle h3{font-family:var(--display);color:#B3A274;font-size:clamp(30px,5vw,60px);margin:0 0 8px;font-weight:400}
+@media (prefers-reduced-motion:reduce){#stage video,#stage img,.lower,.toast{transition:none}}
+
+/* Nelson identity: Hill House caps for display, Baskervville for supporting lines */
+.brand,#ticker .tt .tv,#banner .bv,#msg .mv,#msg .mfoot b,.lower .venue,.idle h3,.thumb.txt{text-transform:uppercase}
+#banner #bHead,#msg .mh,#ticker .tt{font-family:var(--display);text-transform:uppercase;font-weight:600;letter-spacing:.01em}
+#banner #bSub,#msg .ms,#msg .mfoot span,#ticker .tt .ts,.lower .title{font-family:var(--serif)}
+#msg .ms{font-weight:400;font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="brand"><span id="brandName">The Nelson Hotel</span><small id="sub">Picture House. Clips play from a folder on this computer.</small></h1>
+    <div class="hdr-acts"><button class="folder-btn" id="folderBtn">Choose clips folder</button>
+    <button class="play-btn" id="startBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>Start the show</button></div>
+  </header>
+  <div class="folder-note" id="folderNote"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="settings">
+    <h2>How the show runs</h2>
+    <div class="opts">
+      <label class="opt">Mix
+        <select id="mix">
+          <option value="alternate">Alternate: movie scene, then music video</option>
+          <option value="shuffle">Shuffle everything</option>
+          <option value="movies">Movie scenes only</option>
+          <option value="music">Music videos only</option>
+        </select>
+      </label>
+      <label class="opt">Atmosphere clips
+        <select id="atmos">
+          <option value="1">Between every clip</option>
+          <option value="2">After every second clip</option>
+          <option value="0">Off</option>
+        </select>
+      </label>
+      <label class="opt">Play an ad
+        <select id="adMode">
+          <option value="clips">After a number of clips</option>
+          <option value="minutes">After a number of minutes</option>
+          <option value="never">Never</option>
+        </select>
+      </label>
+      <label class="opt"><span id="adEveryLabel">Clips between ads</span>
+        <input type="number" id="adEvery" min="1" max="120" value="3">
+      </label>
+      <label class="opt">Show a message every (minutes)
+        <input type="number" id="msgEvery" min="1" max="120" value="5">
+      </label>
+      <label class="opt">Messages appear as
+        <select id="msgStyle">
+          <option value="ticker">A moving ticker along the bottom</option>
+          <option value="banner">A banner over the show</option>
+          <option value="full">A full-screen slide</option>
+        </select>
+      </label>
+      <label class="opt tk">Ticker direction
+        <select id="tkDir">
+          <option value="ltr">Left to right</option>
+          <option value="rtl">Right to left</option>
+        </select>
+      </label>
+      <label class="opt tk">Ticker text size
+        <select id="tkSize">
+          <option value="s">Small</option>
+          <option value="m">Medium</option>
+          <option value="l">Large</option>
+          <option value="xl">Extra large</option>
+        </select>
+      </label>
+      <label class="opt tk">Ticker speed
+        <select id="tkSpeed">
+          <option value="6">Very slow</option>
+          <option value="10">Slow</option>
+          <option value="15">Medium</option>
+          <option value="22">Fast</option>
+        </select>
+      </label>
+      <label class="opt tk">Times across the screen
+        <select id="tkPasses">
+          <option value="1">Once</option>
+          <option value="2">Twice</option>
+          <option value="3">Three times</option>
+        </select>
+      </label>
+      <label class="opt tk"><span>Try it</span><button type="button" id="tkTest" class="tktest">Preview the ticker</button></label>
+      <label class="opt bn">Message stays up for (seconds)
+        <input type="number" id="msgDur" min="4" max="120" value="12">
+      </label>
+      <label class="opt">Image ad length (seconds)
+        <input type="number" id="imgDur" min="3" max="120" value="10">
+      </label>
+      <label class="opt">Venue name on screen
+        <input type="text" id="venue" placeholder="The Nelson Hotel">
+      </label>
+      <label class="opt">Picture
+        <select id="fit">
+          <option value="contain">Fit whole picture (black bars)</option>
+          <option value="cover">Fill the screen (crops edges)</option>
+        </select>
+      </label>
+      <label class="opt inline"><span class="switch"><input type="checkbox" id="showTitle" checked><span></span></span>Show title when each clip starts</label>
+      <label class="opt inline"><span class="switch"><input type="checkbox" id="muted"><span></span></span>Play muted</label>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span id="storage">Checking storage…</span>
+    <button id="rescan">Rescan folder</button>
+  </div>
+</div>
+
+<div id="stage">
+  <video id="vA" playsinline preload="auto"></video>
+  <video id="vB" playsinline preload="auto"></video>
+  <img id="img" alt="">
+  <div class="lower" id="lower"><div class="venue" id="lVenue"></div><div class="title" id="lTitle"></div></div>
+  <div id="msg"><div class="mb"></div><div class="mf"></div><div class="mv" id="mDay"></div><div class="mh" id="mHead"></div><div class="ms" id="mSub"></div><div class="mfoot"><b id="mVenue">The Nelson Hotel</b><span>232 Oxford St, Bondi Junction</span></div></div>
+  <div id="ticker"><div class="tt" id="tkText"></div></div>
+  <div id="banner"><div class="bv" id="bVenue"></div><div class="bt"><span id="bHead"></span><span id="bSub"></span></div></div>
+  <div class="idle" id="idle"><div><h3>Nothing to play</h3><p>Add clips or switch some on, then start again.</p></div></div>
+  <div class="ctrl">
+    <span class="np" id="np"></span>
+    <button id="pauseBtn">Pause</button>
+    <button id="skipBtn">Skip</button>
+    <button id="adNowBtn">Play ad now</button>
+    <button id="msgNowBtn">Show message</button>
+    <button id="exitBtn">Exit</button>
+  </div>
+</div>
+
+<input type="file" id="dirInput" webkitdirectory multiple hidden>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const CATS=[
+  {key:"movies",label:"Movie scenes",hint:"Drop video files here or tap to add",accept:"video/*"},
+  {key:"music",label:"Music videos",hint:"Drop video files here or tap to add",accept:"video/*"},
+  {key:"atmos",label:"Atmosphere",hint:"Drop short video files here or tap to add",accept:"video/*"},
+  {key:"ads",label:"Your ads",hint:"Drop videos or images here or tap to add",accept:"video/*,image/*"},
+  {key:"msgs",label:"Messages",hint:"",accept:""}
+];
+const $=id=>document.getElementById(id);
+let items=[]; // {id,cat,name,type,blob,active,start,end,from,to}
+let db=null;
+
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600)}
+
+/* ---------- Local library: clips live in a folder on this PC ---------- */
+// Folder layout: <chosen folder>/Movies, /Music, /Atmosphere, /Ads (created if missing).
+// Per-clip settings and messages are kept in this browser on this PC.
+const FOLDERS={movies:"Movies",music:"Music",atmos:"Atmosphere",ads:"Ads"};
+const FS_OK="showDirectoryPicker" in window;
+let ROOT=null,canWrite=false,metaT=null;
+let META={},MSGS=[];
+try{META=JSON.parse(localStorage.getItem("nelson-ph-meta")||"{}")}catch(e){}
+try{MSGS=JSON.parse(localStorage.getItem("nelson-ph-msgs")||"[]")}catch(e){}
+function persist(){try{localStorage.setItem("nelson-ph-meta",JSON.stringify(META));localStorage.setItem("nelson-ph-msgs",JSON.stringify(MSGS))}catch(e){toast("Couldn't save settings in this browser.")}}
+function src(it){if(!it.file)return "";return it.url||(it.url=URL.createObjectURL(it.file))}
+const KEEP=["name","active","start","end","from","to","days","dur"];
+function save(it){
+  if(it.cat==="msgs"){const m=MSGS.find(x=>x.id===it.id);if(m){m.name=it.name;m.sub=it.sub||"";m.active=it.active;m.days=it.days||[];m.from=it.from||"";m.to=it.to||""}}
+  else{const o={};KEEP.forEach(k=>o[k]=it[k]);META[it.id]=o}
+  persist();
+}
+// Remember the folder between visits (IndexedDB can hold the folder handle)
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("nelson-ph",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function kvGet(k){try{const d=await idb();return await new Promise(r=>{const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}}
+async function kvSet(k,v){try{const d=await idb();d.transaction("kv","readwrite").objectStore("kv").put(v,k)}catch(e){}}
+function note(t){const n=$("folderNote");n.innerHTML=t||"";n.classList.toggle("show",!!t)}
+async function pickFolder(){
+  if(!FS_OK){$("dirInput").click();return}
+  try{const h=await window.showDirectoryPicker({id:"nelson-ph",mode:"readwrite"});ROOT=h;await kvSet("root",h);await connect(true)}
+  catch(e){if(e&&e.name!=="AbortError")toast("Couldn't open that folder.")}
+}
+async function connect(fromClick){
+  if(!ROOT)return false;
+  let p=await ROOT.queryPermission({mode:"readwrite"});
+  if(p!=="granted"&&fromClick)p=await ROOT.requestPermission({mode:"readwrite"});
+  if(p!=="granted"){note('Click <b>Reconnect folder</b> to give this page access to your clips folder again (Chrome asks once per visit).');$("folderBtn").textContent="Reconnect folder";return false}
+  canWrite=true;await scan();return true;
+}
+async function scan(){
+  if(!ROOT)return;
+  const found=[];
+  for(const [cat,name] of Object.entries(FOLDERS)){
+    let dir;try{dir=await ROOT.getDirectoryHandle(name,{create:true})}catch(e){continue}
+    for await (const [fname,h] of dir.entries()){
+      if(h.kind!=="file"||fname.startsWith("."))continue;
+      const file=await h.getFile();const type=typeOf(file);
+      if(!type||(cat!=="ads"&&type.startsWith("image")))continue;
+      found.push(mkItem(cat,file,type,fname));
+    }
+  }
+  setItems(found);
+  $("folderBtn").textContent="Change folder";note("");
+  $("sub").textContent="Picture House. Playing from the “"+ROOT.name+"” folder on this computer.";
+}
+function loadFileList(list){ // fallback for browsers without folder access (read-only for this visit)
+  const found=[];
+  for(const f of list){
+    const parts=(f.webkitRelativePath||f.name).split("/");if(parts.length<3)continue;
+    const sub=parts[parts.length-2].toLowerCase();
+    const cat=Object.keys(FOLDERS).find(k=>FOLDERS[k].toLowerCase()===sub);if(!cat)continue;
+    const type=typeOf(f);if(!type||(cat!=="ads"&&type.startsWith("image")))continue;
+    found.push(mkItem(cat,f,type,f.name));
+  }
+  canWrite=false;setItems(found);
+  note("This browser can only read the folder for this visit, so adding or removing clips here is off. Use Google Chrome or Microsoft Edge for the full version.");
+}
+function mkItem(cat,file,type,fname){
+  const id=cat+"/"+fname,m=META[id]||{};
+  return {id,cat,file,type,fname,name:m.name||fname.replace(/\.[^.]+$/,"").replace(/[_-]+/g," "),
+    active:m.active!==false,start:m.start||0,end:m.end||0,from:m.from||"",to:m.to||"",days:m.days||[],dur:m.dur||0,added:file.lastModified};
+}
+function setItems(found){
+  items.forEach(i=>{if(i.url)URL.revokeObjectURL(i.url)});
+  found.sort((a,b)=>a.added-b.added);
+  items=[...found,...MSGS.map(m=>({...m,cat:"msgs",type:"text/message"}))];
+  render();storage();
+  // fill in video lengths in the background
+  (async()=>{for(const it of found){if(it.dur||!it.type.startsWith("video"))continue;it.dur=await probeDur(it.file);if(it.dur){save(it)}}render()})();
+}
+
+/* ---------- Settings (kept in this browser) ---------- */
+const DEF={tkDir:"ltr",tkSize:"m",tkSpeed:"10",tkPasses:"1",msgEvery:5,msgStyle:"ticker",msgDur:12,atmos:"2",mix:"alternate",adMode:"clips",adEvery:3,imgDur:10,venue:"The Nelson Hotel",fit:"contain",showTitle:true,muted:false};
+let S={...DEF};
+try{const raw=localStorage.getItem("nelson-ph-settings");if(raw)S={...DEF,...JSON.parse(raw)}}catch(e){}
+let saveT=null;
+function saveS(){
+  try{localStorage.setItem("nelson-ph-settings",JSON.stringify(S))}catch(e){}
+}
+function paintSettings(){
+  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit"].forEach(k=>{const el=$(k);if(document.activeElement!==el)el.value=S[k]});
+  ["showTitle","muted"].forEach(k=>$(k).checked=S[k]);
+  syncLabels();
+}
+function bindSettings(){
+  ["tkDir","tkSize","tkSpeed","tkPasses","msgEvery","msgStyle","msgDur","atmos","mix","adMode","adEvery","imgDur","venue","fit"].forEach(k=>{const el=$(k);el.addEventListener("input",()=>{S[k]=el.type==="number"?Math.max(+el.min||0,+el.value||0):el.value;saveS();syncLabels()})});
+  ["showTitle","muted"].forEach(k=>{const el=$(k);el.addEventListener("change",()=>{S[k]=el.checked;saveS()})});
+  paintSettings();
+}
+function syncLabels(){
+  document.querySelectorAll(".opt.tk").forEach(e=>e.style.display=S.msgStyle==="ticker"?"":"none");
+  document.querySelectorAll(".opt.bn").forEach(e=>e.style.display=S.msgStyle==="ticker"?"none":"");
+  $("adEveryLabel").textContent=S.adMode==="minutes"?"Minutes between ads":"Clips between ads";
+  $("adEvery").disabled=S.adMode==="never";
+  $("brandName").textContent=S.venue||"The Nelson Hotel";
+}
+
+/* ---------- Library UI ---------- */
+const ICON={
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+  bin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+};
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+let uploading={};
+function render(){
+  const g=$("grid");
+  if(g.contains(document.activeElement)&&document.activeElement.matches("input.name,.detail input,.compose input"))return; // don't clobber typing
+  const open=new Set([...g.querySelectorAll(".item.open")].map(li=>li.dataset.id));
+  g.innerHTML="";
+  CATS.forEach(c=>{
+    const list=items.filter(i=>i.cat===c.key);
+    const on=list.filter(i=>i.active).length;
+    const sec=document.createElement("section");sec.className="reel";
+    const busy=uploading[c.key];
+    sec.innerHTML=`<div class="reel-head"><h2>${c.label}</h2><span class="count">${list.length?on+" of "+list.length+" on":""}</span></div>
+      ${c.key==="msgs"?"":`<label class="drop${busy?" busy":""}" tabindex="0">${busy?"Uploading "+busy+"…":c.hint}<input type="file" multiple accept="${c.key==="ads"?"video/mp4,video/webm,image/png,image/jpeg,image/webp,image/gif":"video/mp4,video/webm"}"></label>
+      <div class="limit">MP4 or WebM${c.key==="ads"?", or PNG, JPG, WebP images":""}. Copied into the ${FOLDERS[c.key]} folder.</div>`}
+      ${c.key==="msgs"?`<div class="compose"><button type="button">+ Write a message</button>
+        <form><input name="h" maxlength="80" placeholder="Big text, e.g. Happy 40th, Sarah!" required>
+        <input name="s" maxlength="120" placeholder="Smaller line (optional), e.g. Drinks on the house at 9"><div class="acts"><button type="button" class="cancel">Cancel</button><button class="go">Add to the show</button></div></form></div>`:""}
+      ${list.length?"":`<div class="empty">${c.key==="msgs"?"Type a welcome, a birthday shout-out or a last-drinks call. Messages run on their own timer, separate from the ads.":c.key==="ads"?"Add a promo image or short video. Set a time window to run it only during happy hour or trivia night.":"No clips yet."}</div>`}
+      <ul class="items"></ul>`;
+    const ul=sec.querySelector("ul");
+    list.forEach(it=>{const li=itemEl(it);if(open.has(it.id))li.classList.add("open");ul.appendChild(li)});
+    const drop=sec.querySelector(".drop"),inp=drop&&drop.querySelector("input");
+    if(drop){inp.addEventListener("change",()=>{addFiles(inp.files,c.key);inp.value=""});
+    drop.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}});
+    ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+    ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+    drop.addEventListener("drop",e=>addFiles(e.dataTransfer.files,c.key));}
+    const comp=sec.querySelector(".compose");
+    if(comp){const f=comp.querySelector("form");
+      comp.querySelector(":scope>button").addEventListener("click",()=>{comp.classList.add("open");f.h.focus()});
+      f.querySelector(".cancel").addEventListener("click",()=>{comp.classList.remove("open");f.reset()});
+      f.addEventListener("submit",e=>{e.preventDefault();addMessage(f.h.value,f.s.value);f.reset();comp.classList.remove("open")});
+    }
+    g.appendChild(sec);
+  });
+}
+function itemEl(it){
+  const li=document.createElement("li");li.className="item"+(it.active?"":" off");li.dataset.id=it.id;
+  const isMsg=it.type==="text/message";
+  const isImg=isMsg||(it.type||"").startsWith("image");
+  const dsum=daySummary(it.days);
+  li.innerHTML=`<div class="row">
+      ${isMsg?`<span class="thumb txt">Aa</span>`:isImg?`<img class="thumb" alt="" loading="lazy" src="${src(it)}">`:`<span class="thumb">${it.dur?fmt(it.dur):"video"}</span>`}
+      <input class="name" value="${esc(it.name)}" aria-label="${isMsg?"Message":"Title"}">
+      ${(it.cat==="ads"||it.cat==="msgs")&&dsum?`<span class="tag">${dsum}</span>`:""}
+      <button class="icon" data-a="preview" title="Preview full screen">${ICON.play}</button>
+      <button class="icon" data-a="more" title="Trim and timing">${ICON.gear}</button>
+      <label class="switch" title="On or off"><input type="checkbox" ${it.active?"checked":""}><span></span></label>
+      <button class="icon" data-a="del" title="Remove">${ICON.bin}</button>
+    </div>
+    <div class="detail">
+      ${isImg?"":`<label>Start at (m:ss)<input data-f="start" placeholder="0:00" value="${it.start?fmt(it.start):""}"></label>
+      <label>Stop at (m:ss)<input data-f="end" placeholder="end" value="${it.end?fmt(it.end):""}"></label>`}
+      ${isMsg?`<label class="full">Smaller line<input data-f="sub" maxlength="120" placeholder="Optional" value="${esc(it.sub||"")}"></label>`:""}
+      ${(it.cat==="ads"||it.cat==="msgs")?`<div class="full days" role="group" aria-label="Days">Show on ${DAYS.map((d,i)=>`<button type="button" data-day="${i}" class="${(it.days||[]).includes(i)?"on":""}">${d}</button>`).join("")}</div>
+      <span class="full">No days picked means every day. Before 5am counts as the night before.</span>
+      <label>Show from (time)<input type="time" data-f="from" value="${it.from||""}"></label>
+      <label>Until (time)<input type="time" data-f="to" value="${it.to||""}"></label>
+      <span class="full">Leave times blank to run all day. Overnight windows like 21:00 to 02:00 work.</span>`:""}
+      ${isImg?"":`<span class="full">Trim to just the part you want on screen.</span>`}
+    </div>`;
+  li.querySelector(".name").addEventListener("change",e=>{it.name=e.target.value.trim()||it.name;save(it)});
+  li.querySelector(".switch input").addEventListener("change",e=>{it.active=e.target.checked;li.classList.toggle("off",!it.active);save(it);updateCounts()});
+  li.querySelector('[data-a="more"]').addEventListener("click",()=>li.classList.toggle("open"));
+  li.querySelector('[data-a="del"]').addEventListener("click",()=>removeItem(it));
+  li.querySelector('[data-a="preview"]').addEventListener("click",()=>startShow(it));
+  li.querySelectorAll("[data-day]").forEach(b=>b.addEventListener("click",()=>{
+    const d=+b.dataset.day;let ds=(it.days||[]).slice();
+    ds=ds.includes(d)?ds.filter(x=>x!==d):[...ds,d].sort();
+    it.days=ds;b.classList.toggle("on",ds.includes(d));
+    const t=li.querySelector(".tag"),sum=daySummary(ds);
+    if(t){if(sum)t.textContent=sum;else t.remove()}else if(sum){const sp=document.createElement("span");sp.className="tag";sp.textContent=sum;li.querySelector(".name").after(sp)}
+    save(it);
+  }));
+  li.querySelectorAll("[data-f]").forEach(inp=>inp.addEventListener("change",()=>{
+    const f=inp.dataset.f;
+    if(f==="start"||f==="end"){const v=parseT(inp.value);if(inp.value&&v==null){toast("Use minutes:seconds, like 1:25");return}it[f]=v||0}
+    else it[f]=inp.value;
+    save(it);
+  }));
+  return li;
+}
+const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function daySummary(ds){if(!ds||!ds.length||ds.length===7)return "";const o=[1,2,3,4,5,6,0].filter(d=>ds.includes(d));return o.map(d=>DAYS[d]).join(", ")}
+async function addMessage(h,sub){
+  h=(h||"").trim();sub=(sub||"").trim();if(!h)return;
+  const m={id:"msg-"+Date.now(),name:h,sub,active:true,days:[],from:"",to:"",start:0,end:0,dur:0,added:Date.now()};
+  MSGS.push(m);persist();items.push({...m,cat:"msgs",type:"text/message"});render();toast("Message added to the show");
+}
+function updateCounts(){document.querySelectorAll(".reel").forEach((sec,i)=>{const l=items.filter(x=>x.cat===CATS[i].key);sec.querySelector(".count").textContent=l.length?l.filter(x=>x.active).length+" of "+l.length+" on":""})}
+function fmt(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=String(s%60).padStart(2,"0");return h?h+":"+String(m).padStart(2,"0")+":"+x:m+":"+x}
+function parseT(v){if(!v)return 0;const p=v.trim().split(":").map(Number);if(p.some(isNaN))return null;return p.reduce((a,b)=>a*60+b,0)}
+function probeDur(blob){return new Promise(res=>{const v=document.createElement("video");const u=URL.createObjectURL(blob);v.preload="metadata";v.onloadedmetadata=()=>{res(isFinite(v.duration)?v.duration:0);URL.revokeObjectURL(u)};v.onerror=()=>{res(0);URL.revokeObjectURL(u)};v.src=u})}
+
+const OK_TYPES=["video/mp4","video/webm","image/png","image/jpeg","image/webp","image/gif"];
+function typeOf(f){
+  if(OK_TYPES.includes(f.type))return f.type;
+  const ext=(f.name.split(".").pop()||"").toLowerCase();
+  return {mp4:"video/mp4",m4v:"video/mp4",webm:"video/webm",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",webp:"image/webp",gif:"image/gif"}[ext]||"";
+}
+async function addFiles(files,cat){
+  if(!ROOT||!canWrite){toast(FS_OK?"Choose your clips folder first.":"Adding clips needs Chrome or Edge. Copy files into the folder instead.");return}
+  const arr=[...files];let ok=0;const problems=[];
+  let dir;try{dir=await ROOT.getDirectoryHandle(FOLDERS[cat],{create:true})}catch(e){toast("Couldn't open the "+FOLDERS[cat]+" folder.");return}
+  for(let n=0;n<arr.length;n++){
+    const f=arr[n],type=typeOf(f);
+    if(!type||(cat!=="ads"&&type.startsWith("image"))){problems.push(f.name+" is not MP4 or WebM"+(cat==="ads"?" or an image":""));continue}
+    uploading[cat]=(arr.length>1?(n+1)+" of "+arr.length:f.name);render();
+    try{const fh=await dir.getFileHandle(f.name,{create:true});const w=await fh.createWritable();await w.write(f);await w.close();ok++}
+    catch(e){problems.push(f.name+": couldn't copy it into the folder"+(e&&e.name==="QuotaExceededError"?" (disk full)":""))}
+  }
+  delete uploading[cat];await scan();
+  if(problems.length)toast(problems[0]+(problems.length>1?" (+"+(problems.length-1)+" more)":""));
+  else if(ok)toast("Added "+ok+" "+(ok===1?"file":"files"));
+}
+async function removeItem(it){
+  if(it.cat==="msgs"){
+    if(!confirm("Delete the message \u201C"+it.name+"\u201D?"))return;
+    MSGS=MSGS.filter(m=>m.id!==it.id);persist();items=items.filter(i=>i.id!==it.id);render();return;
+  }
+  if(!ROOT||!canWrite)return;
+  if(!confirm("Delete "+it.fname+" from the "+FOLDERS[it.cat]+" folder on this computer?"))return;
+  try{const dir=await ROOT.getDirectoryHandle(FOLDERS[it.cat]);await dir.removeEntry(it.fname);delete META[it.id];persist();toast("Removed "+it.name);await scan()}
+  catch(e){toast("Couldn't delete it. It may be open in another program.")}
+}
+function storage(){
+  const el=$("storage"),n=items.filter(i=>i.cat!=="msgs").length;
+  if(!ROOT&&!n){el.textContent=FS_OK?"No clips folder chosen yet.":"Choose your clips folder to load the library.";return}
+  const bytes=items.reduce((a,i)=>a+(i.file?i.file.size:0),0);
+  el.textContent=n+" clips in the folder ("+gb(bytes)+"). "+MSGS.length+" messages.";
+}
+function gb(b){return b>=1e9?(b/1e9).toFixed(1)+" GB":Math.round((b||0)/1e6)+" MB"}
+$("rescan").addEventListener("click",async()=>{if(ROOT){if(await connect(true))toast("Folder rescanned")}else pickFolder()});
+$("folderBtn").addEventListener("click",async()=>{if(ROOT&&$("folderBtn").textContent==="Reconnect folder"){await connect(true)}else pickFolder()});
+$("dirInput").addEventListener("change",e=>{loadFileList(e.target.files);e.target.value=""});
+
+/* ---------- Scheduler ---------- */
+let bags={},lastCat="music",sinceAtmos=0,lastWasAtmos=false,clipsSinceAd=0,lastAdAt=0,adIdx=0,queueAdNow=false,lastId=null;
+function nowMins(){const d=new Date();return d.getHours()*60+d.getMinutes()}
+function toM(t){if(!t)return null;const [h,m]=t.split(":").map(Number);return h*60+m}
+function tradingDay(){const d=new Date();if(d.getHours()<5)d.setDate(d.getDate()-1);return d.getDay()}
+function adLive(a){
+  if(a.days&&a.days.length&&!a.days.includes(tradingDay()))return false;
+  const f=toM(a.from),t=toM(a.to);if(f==null&&t==null)return true;
+  const n=nowMins(),F=f==null?0:f,T=t==null?1440:t;
+  return F<=T?(n>=F&&n<T):(n>=F||n<T);
+}
+function pool(cat){return items.filter(i=>i.cat===cat&&i.active)}
+function fromBag(cat){
+  const p=pool(cat);if(!p.length)return null;
+  let b=(bags[cat]||[]).filter(id=>p.some(x=>x.id===id));
+  if(!b.length){b=p.map(x=>x.id);for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}
+    if(b.length>1&&b[0]===lastId)b.push(b.shift())}
+  const id=b.shift();bags[cat]=b;return p.find(x=>x.id===id);
+}
+function adDue(){
+  if(queueAdNow)return true;
+  if(S.adMode==="never")return false;
+  if(S.adMode==="clips")return clipsSinceAd>=S.adEvery;
+  return Date.now()-lastAdAt>=S.adEvery*60000;
+}
+let lastMsgAt=0,msgIdx=0,msgTimer=null,bannerTimer=null,bannerUp=false,queueMsgNow=false;
+function liveMsgs(){return pool("msgs").filter(adLive)}
+function msgDue(){return queueMsgNow||Date.now()-lastMsgAt>=Math.max(1,S.msgEvery)*60000}
+function pickMsg(){const m=liveMsgs();if(!m.length)return null;const x=m[msgIdx%m.length];msgIdx++;lastMsgAt=Date.now();queueMsgNow=false;return x}
+function showBanner(m){
+  $("bVenue").textContent=(m.days&&m.days.length===1&&tradingDay()===m.days[0])?"Tonight":(S.venue||"The Nelson Hotel");
+  $("bHead").textContent=m.name;$("bSub").textContent=m.sub||"";
+  const vn=(S.venue||"The Nelson Hotel").toLowerCase().replace(/ hotel$/,"");
+  $("bVenue").style.display=($("bVenue").textContent!=="Tonight"&&m.name.toLowerCase().includes(vn))?"none":"";
+  $("lower").classList.remove("show");clearTimeout(titleTimer);
+  const bn=$("banner");bn.classList.add("reset");bn.classList.remove("out","show");void bn.offsetWidth;bn.classList.remove("reset");
+  bn.classList.add("show");bannerUp=true;
+  clearTimeout(bannerTimer);bannerTimer=setTimeout(hideBanner,Math.max(4,S.msgDur)*1000);
+}
+let tkAnim=null,tkDone=null;
+function msgLabel(m){return (m.days&&m.days.length===1&&tradingDay()===m.days[0])?"Tonight":""}
+function showTicker(m,onDone){
+  const tk=$("ticker"),tt=$("tkText");
+  tk.className="show "+(S.tkSize||"m");
+  const lab=msgLabel(m);
+  tt.innerHTML=(lab?`<span class="tv">${esc(lab)}</span>`:"")+esc(m.name)+(m.sub?`<span class="dot">⬥</span><span class="ts">${esc(m.sub)}</span>`:"");
+  $("lower").classList.remove("show");clearTimeout(titleTimer);
+  bannerUp=true;tkDone=onDone||null;
+  const W=tk.clientWidth,w=tt.scrollWidth,ltr=(S.tkDir||"ltr")==="ltr";
+  const from=ltr?-w:W,to=ltr?W:-w;
+  const pxps=(+S.tkSpeed||10)/100*window.innerWidth;
+  const passes=Math.max(1,+S.tkPasses||1);
+  const dur=(W+w)/pxps*1000;
+  if(tkAnim)tkAnim.cancel();
+  tt.style.transform=`translate(${from}px,-50%)`;
+  tkAnim=tt.animate([{transform:`translate(${from}px,-50%)`},{transform:`translate(${to}px,-50%)`}],{duration:dur,iterations:passes,easing:"linear",delay:400});
+  tkAnim.onfinish=()=>{hideTicker()};
+}
+function hideTicker(){const tk=$("ticker");tk.classList.remove("show");if(tkAnim){tkAnim.cancel();tkAnim=null}
+  bannerUp=false;const d=tkDone;tkDone=null;if(d)setTimeout(d,500)}
+function showMsgOverlay(m,onDone){if(S.msgStyle==="ticker")showTicker(m,onDone);else{showBanner(m);if(onDone)setTimeout(onDone,Math.max(4,S.msgDur)*1000+900)}}
+function hideBanner(){if(tkAnim||$("ticker").classList.contains("show")){const d=tkDone;tkDone=null;hideTicker();}const bn=$("banner");clearTimeout(bannerTimer);
+  if(bn.classList.contains("show")){bn.classList.add("out");bn.classList.remove("show");
+    setTimeout(()=>{if(!bn.classList.contains("show")){bn.classList.add("reset");bn.classList.remove("out");void bn.offsetWidth;bn.classList.remove("reset")}},950)}
+  bannerUp=false}
+function msgTick(){
+  if(!playing||paused||S.msgStyle==="full"||bannerUp||single)return;
+  if(curItem&&curItem.cat==="ads")return;
+  if(msgDue()){const m=pickMsg();if(m)showMsgOverlay(m)}
+}
+function next(){
+  if(S.msgStyle==="full"&&msgDue()){const m=pickMsg();if(m)return m}
+  const ads=pool("ads").filter(adLive);
+  if(ads.length&&adDue()){
+    queueAdNow=false;const a=ads[adIdx%ads.length];adIdx++;clipsSinceAd=0;lastAdAt=Date.now();return a;
+  }
+  queueAdNow=false;
+  const every=+S.atmos||0;
+  if(every&&!lastWasAtmos&&sinceAtmos>=every&&pool("atmos").length){const a=fromBag("atmos");if(a){sinceAtmos=0;lastWasAtmos=true;return a}}
+  lastWasAtmos=false;
+  let cat;
+  if(S.mix==="movies")cat="movies";
+  else if(S.mix==="music")cat="music";
+  else if(S.mix==="alternate")cat=lastCat==="movies"?"music":"movies";
+  else{const m=pool("movies").length,u=pool("music").length;cat=Math.random()*(m+u)<m?"movies":"music"}
+  let it=fromBag(cat);
+  if(!it){cat=cat==="movies"?"music":"movies";if(S.mix==="alternate"||S.mix==="shuffle")it=fromBag(cat)}
+  if(!it&&ads.length){const a=ads[adIdx%ads.length];adIdx++;return a}
+  if(it){lastCat=cat;clipsSinceAd++;sinceAtmos++}
+  if(!it&&pool("atmos").length){lastWasAtmos=true;return fromBag("atmos")}
+  return it;
+}
+
+/* ---------- Stage ---------- */
+const stage=$("stage"),img=$("img"),vids=[$("vA"),$("vB")];
+let cur=0,curUrl=null,imgTimer=null,titleTimer=null,playing=false,paused=false,wake=null,pointerTimer=null,single=null,curItem=null;
+
+async function startShow(only){
+  if(!only&&ROOT&&!canWrite&&FS_OK){if(!await connect(true))return}
+  single=only||null;
+  if(!single&&!items.some(i=>i.active&&i.cat!=="ads"&&i.cat!=="msgs")&&!pool("ads").length&&!pool("msgs").length){toast(ROOT?"Add some clips to the folder first":"Choose your clips folder first");return}
+  stage.classList.add("on");stage.classList.toggle("fill",S.fit==="cover");
+  playing=true;paused=false;$("pauseBtn").textContent="Pause";
+  if(!single){clipsSinceAd=0;lastAdAt=Date.now();lastMsgAt=Date.now()-Math.max(1,S.msgEvery)*60000+20000}
+  clearInterval(msgTimer);msgTimer=setInterval(msgTick,1000);
+  try{if(stage.requestFullscreen&&!document.fullscreenElement)await stage.requestFullscreen()}catch(e){}
+  try{if(navigator.wakeLock)wake=await navigator.wakeLock.request("screen")}catch(e){}
+  advance();
+}
+function stopShow(){
+  playing=false;clearInterval(msgTimer);hideBanner();clearTimeout(imgTimer);clearTimeout(titleTimer);
+  vids.forEach(v=>{v.pause();v.removeAttribute("src");v.load();v.classList.remove("show")});
+  img.classList.remove("show");img.removeAttribute("src");$("msg").classList.remove("show");
+  curUrl=null;
+  $("lower").classList.remove("show");stage.classList.remove("on");$("idle").classList.remove("show");
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+  try{wake&&wake.release()}catch(e){};wake=null;
+}
+function advance(){
+  if(!playing)return;
+  clearTimeout(imgTimer);
+  let it;
+  if(single&&single!=="done"&&single.cat==="msgs"&&S.msgStyle!=="full"){const m=single;single="done";
+    $("idle").classList.remove("show");vids.forEach(v=>v.classList.remove("show"));img.classList.remove("show");$("msg").classList.remove("show");
+    showMsgOverlay(m,()=>{if(playing)stopShow()});return}
+  if(single){it=single;single="done"}
+  else if(single==="done"){stopShow();return}
+  else it=next();
+  if(!it){$("idle").classList.add("show");vids.forEach(v=>v.classList.remove("show"));img.classList.remove("show");$("msg").classList.remove("show");return}
+  $("idle").classList.remove("show");
+  play(it);
+}
+function play(it){
+  curItem=it;
+  const oldUrl=null;curUrl=src(it);
+  if(it.cat==="ads")hideBanner();
+  $("np").textContent=(it.type==="text/message"?"Message":({movies:"Movie scene",music:"Music video",atmos:"Atmosphere",ads:"Ad",msgs:"Message"})[it.cat])+": "+it.name;
+  const msg=$("msg");
+  if(it.type==="text/message"){
+    const L=it.name.length;
+    $("mHead").style.fontSize=(L<=10?13:L<=20?9.5:L<=36?7:L<=56?5.4:4.4)+"vw";
+    $("mHead").textContent=it.name;$("mSub").textContent=it.sub||"";
+    const ds=it.days||[];$("mDay").textContent=ds.length===1?(tradingDay()===ds[0]?"Tonight":["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][ds[0]]):(S.venue||"The Nelson Hotel");
+    $("mVenue").textContent=S.venue||"The Nelson Hotel";
+    $("mVenue").style.visibility=$("mDay").textContent===$("mVenue").textContent?"hidden":"visible";
+    msg.classList.add("show");img.classList.remove("show");vids.forEach(v=>{v.classList.remove("show");v.pause()});
+    $("lower").classList.remove("show");
+    imgTimer=setTimeout(advance,Math.max(3,it.cat==="msgs"?S.msgDur:S.imgDur)*1000);
+    return;
+  }
+  if(it.type.startsWith("image")){
+    img.onerror=()=>{clearTimeout(imgTimer);advance()};
+    img.onload=()=>{img.classList.add("show");msg.classList.remove("show");vids.forEach(v=>{v.classList.remove("show");v.pause()});cleanup(oldUrl)};
+    img.src=curUrl;
+    imgTimer=setTimeout(advance,Math.max(3,S.imgDur)*1000);
+    $("lower").classList.remove("show");
+    return;
+  }
+  const v=vids[cur=1-cur],other=vids[1-cur];
+  v.muted=S.muted;
+  v.onloadedmetadata=()=>{if(it.start&&it.start<v.duration)v.currentTime=it.start};
+  v.oncanplay=()=>{v.oncanplay=null;
+    const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;v.play().catch(()=>{})});
+    v.classList.add("show");other.classList.remove("show");msg.classList.remove("show");
+    setTimeout(()=>{other.pause();other.removeAttribute("src");other.load()},500);
+    cleanup(oldUrl);
+    img.classList.remove("show");
+    if(it.cat==="movies"||it.cat==="music")showTitle(it);else $("lower").classList.remove("show");
+  };
+  v.ontimeupdate=()=>{if(it.end&&v.currentTime>=it.end)advanceOnce(v)};
+  v.onended=()=>advanceOnce(v);
+  v.onerror=()=>{toast("Couldn't play "+it.name+". Skipping.");advanceOnce(v)};
+  v.onwaiting=()=>{clearTimeout(v._stall);v._stall=setTimeout(()=>{if(v.readyState<3){toast("Slow connection, skipping "+it.name);advanceOnce(v)}},20000)};
+  v.onplaying=()=>clearTimeout(v._stall);
+  v._done=false;
+  v.src=curUrl;v.load();
+}
+function advanceOnce(v){if(v._done)return;v._done=true;advance()}
+function cleanup(u){}
+function showTitle(it){
+  clearTimeout(titleTimer);const l=$("lower");
+  if(!S.showTitle||bannerUp){l.classList.remove("show");return}
+  $("lVenue").textContent=S.venue||"";$("lTitle").textContent=it.name;
+  l.classList.add("show");titleTimer=setTimeout(()=>l.classList.remove("show"),6000);
+}
+function togglePause(){
+  if(!playing)return;const v=vids[cur];paused=!paused;$("pauseBtn").textContent=paused?"Resume":"Pause";
+  if(tkAnim){paused?tkAnim.pause():tkAnim.play()}
+  if(curItem&&(curItem.type.startsWith("image")||curItem.type==="text/message")){if(paused)clearTimeout(imgTimer);else imgTimer=setTimeout(advance,3000)}
+  else paused?v.pause():v.play().catch(()=>{});
+}
+$("startBtn").addEventListener("click",()=>startShow());
+$("exitBtn").addEventListener("click",stopShow);
+$("skipBtn").addEventListener("click",()=>{paused=false;$("pauseBtn").textContent="Pause";advance()});
+$("pauseBtn").addEventListener("click",togglePause);
+$("tkTest").addEventListener("click",()=>{
+  const m=liveMsgs()[0]||pool("msgs")[0]||{cat:"msgs",type:"text/message",name:"Welcome to the "+(S.venue||"The Nelson Hotel"),sub:"",days:[]};
+  const keep=S.msgStyle;startShow(m);
+});
+$("msgNowBtn").addEventListener("click",()=>{if(!liveMsgs().length){toast("No messages are on for this time of day");return}
+  queueMsgNow=true;if(S.msgStyle!=="full"){hideBanner();msgTick()}else advance()});
+$("adNowBtn").addEventListener("click",()=>{if(!pool("ads").filter(adLive).length){toast("No ads are on for this time of day");return}queueAdNow=true;advance()});
+stage.addEventListener("mousemove",()=>{stage.classList.add("pointer");clearTimeout(pointerTimer);pointerTimer=setTimeout(()=>stage.classList.remove("pointer"),2500)});
+stage.addEventListener("click",e=>{if(e.target.closest(".ctrl"))return;stage.classList.toggle("pointer");clearTimeout(pointerTimer);pointerTimer=setTimeout(()=>stage.classList.remove("pointer"),4000)});
+document.addEventListener("keydown",e=>{
+  if(!playing)return;
+  if(e.key===" "){e.preventDefault();togglePause()}
+  else if(e.key==="ArrowRight"){paused=false;advance()}
+  else if(e.key==="a"||e.key==="A"){$("adNowBtn").click()}
+  else if(e.key==="m"||e.key==="M"){$("msgNowBtn").click()}
+  else if(e.key==="Escape"&&!document.fullscreenElement){stopShow()}
+});
+document.addEventListener("visibilitychange",async()=>{if(playing&&document.visibilityState==="visible"&&navigator.wakeLock){try{wake=await navigator.wakeLock.request("screen")}catch(e){}}});
+
+/* ---------- Boot ---------- */
+bindSettings();items=MSGS.map(m=>({...m,cat:"msgs",type:"text/message"}));render();storage();
+(async()=>{
+  if(!FS_OK){note("For the full version use Google Chrome or Microsoft Edge. In this browser, choose the folder each visit and clips can't be added from the page.");return}
+  const h=await kvGet("root");
+  if(!h){note('First time on this PC? Click <b>Choose clips folder</b> and pick (or create) a folder such as <b>Documents\\Nelson Picture House</b>. The page adds Movies, Music, Atmosphere and Ads folders inside it.');return}
+  ROOT=h;await connect(false);
+})();
+})();
+</script>
+</body>
+</html>
