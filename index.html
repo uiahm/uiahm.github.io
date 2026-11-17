@@ -27,12 +27,9 @@
   <section class="abb-section abb-video">
     <div class="abb-wrap abb-narrow">
       <h2>See AdBreakBox in action.</h2>
-      <p class="abb-muted">Video coming soon.</p>
+      <p class="abb-muted">How Picture House works, in 30 seconds.</p>
 
-      <!-- Replace this placeholder later with a real embed (YouTube/Vimeo) -->
-      <div class="abb-video-box" aria-label="Video placeholder">
-        <div class="abb-play" aria-hidden="true"></div>
-      </div>
+      <video class="abb-video-el" controls playsinline preload="metadata" src="/media/adbreakbox-picture-house-how-it-works.mp4#t=2.6" aria-label="How Picture House works"></video>
     </div>
   </section>
 
@@ -228,6 +225,16 @@
     border-top:11px solid transparent;
     border-bottom:11px solid transparent;
     transform:translateX(3px);
+  }
+
+  .abb-video-el{
+    display:block;
+    width:100%;
+    aspect-ratio:16/9;
+    margin-top:18px;
+    border-radius:16px;
+    border:1px solid var(--abb-border);
+    background:#000;
   }
 
   .abb-form{
