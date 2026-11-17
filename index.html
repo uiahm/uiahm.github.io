@@ -71,7 +71,6 @@
   </label>
 
   <input type="hidden" name="_subject" value="New AdBreakBox waitlist signup" />
-  <input type="hidden" name="_redirect" value="https://adbreakbox.com/?thanks=1" />
 
   <button class="abb-btn abb-btn-wide" type="submit">
     Join the waitlist
@@ -80,6 +79,9 @@
       
 <div id="thanksMessage" style="display:none; margin-top:16px; padding:14px; border-radius:10px; background:rgba(30,107,255,.15); border:1px solid rgba(30,107,255,.4);">
   Thanks — you're on the AdBreakBox early access list.
+</div>
+<div id="formError" style="display:none; margin-top:16px; padding:14px; border-radius:10px; background:rgba(255,80,80,.12); border:1px solid rgba(255,80,80,.4);">
+  Sorry, that didn't go through. Please try again.
 </div>
       
       <footer class="abb-footer">
@@ -96,6 +98,24 @@
     </div>
   </section>
 </div>
+
+<script>
+  // Send the waitlist form in the background (works on Formspree's free plan) and show the thank-you message here.
+  (function () {
+    var form = document.querySelector('.abb-form');
+    var thanks = document.getElementById('thanksMessage');
+    var error = document.getElementById('formError');
+    if (!form || !window.fetch) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Sending…'; error.style.display = 'none';
+      fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); form.style.display = 'none'; thanks.style.display = 'block'; })
+        .catch(function () { error.style.display = 'block'; btn.disabled = false; btn.textContent = 'Join the waitlist'; });
+    });
+  })();
+</script>
 
 <style>
   :root{
